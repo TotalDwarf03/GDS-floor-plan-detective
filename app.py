@@ -134,9 +134,10 @@ with col2:
             
             # Show toast with random status message
             if percentage == 100:
-                st.toast(random.choice(STATUS_MESSAGES["passing"]), icon="🎉")
+                st.toast(random.choice(STATUS_MESSAGES["passing"]), icon="🕵️‍♂️")
+                st.balloons()
             else:
-                st.toast(random.choice(STATUS_MESSAGES["failing"]), icon="⚠️")
+                st.toast(random.choice(STATUS_MESSAGES["failing"]), icon="🕵️‍♂️")
             
             # Display overall score with fun feedback
             st.write("### Investigation Results 🎯")
