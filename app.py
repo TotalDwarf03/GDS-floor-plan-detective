@@ -64,60 +64,6 @@ with col1:
             for i, image in enumerate(images):
                 st.image(image, caption=f'Page {i+1}', use_container_width=True)
             
-            if st.button("Analyze PDF"):
-                with st.spinner("Analyzing document..."):
-                    # Convert images to base64
-                    image_messages = []
-                    for i, image in enumerate(images):
-                        # Convert PIL image to bytes
-                        img_byte_arr = io.BytesIO()
-                        image.save(img_byte_arr, format='PNG')
-                        img_byte_arr = img_byte_arr.getvalue()
-                        
-                        # Encode as base64
-                        img_base64 = base64.b64encode(img_byte_arr).decode('utf-8')
-                        
-                        image_messages.append({
-                            "type": "input_image",
-                            "image": img_base64
-                        })
-                    
-                    # Prepare the message content
-                    message_content = [
-                        {
-                            "type": "input_text",
-                            "text": "Analyze this floor plan and check for the following elements: scale bar, compass/north reference, room dimensions, title block, legend, room labels, door swings, window symbols, furniture layout, and annotations."
-                        }
-                    ]
-                    message_content.extend(image_messages)
-                    
-                    completion = client.responses.parse(
-                        model=openai_model,
-                        input=[
-                            {
-                                "role": "user",
-                                "content": [
-                                    {
-                                        "type": "input_text",
-                                        "text": "Analyze this floor plan and check for the following elements: scale bar, compass/north reference, room dimensions, title block, legend, room labels, door swings, window symbols, furniture layout, and annotations."
-                                    },
-                                    {
-                                        "type": "input_image",
-                                        "image_url": f"data:image/jpeg;base64,{image_messages[0]['image']}"
-                                    }
-                                ]
-                            }
-                        ],
-                        text_format=DiagramExtraction
-                    )
-
-                    # Extract the parsed response
-                    output_text = completion.output[0].content[0].text
-                    parsed_data = json.loads(output_text)
-                    
-                    # Store the results in session state
-                    st.session_state.checklist_results = parsed_data
-                    
         except Exception as e:
             st.error(f"Error processing PDF: {str(e)}")
         finally:
@@ -142,17 +88,74 @@ with col2:
             "annotations": False
         }
     
-    # Display checklist items
-    st.write("### Required Elements")
-    st.write("Scale Bar:", "✅ Present" if st.session_state.checklist_results["scale_bar"] else "❌ Missing")
-    st.write("Compass/North Reference:", "✅ Present" if st.session_state.checklist_results["compass"] else "❌ Missing")
-    st.write("Room Dimensions:", "✅ Present" if st.session_state.checklist_results["dimensions"] else "❌ Missing")
-    st.write("Title Block:", "✅ Present" if st.session_state.checklist_results["title_block"] else "❌ Missing")
-    
-    st.write("### Additional Elements")
-    st.write("📋 Legend:", "✅ Present" if st.session_state.checklist_results["legend"] else "❌ Missing")
-    st.write("🏠 Room Labels:", "✅ Present" if st.session_state.checklist_results["room_labels"] else "❌ Missing")
-    st.write("🚪 Door Swings:", "✅ Present" if st.session_state.checklist_results["door_swings"] else "❌ Missing")
-    st.write("🪟 Window Symbols:", "✅ Present" if st.session_state.checklist_results["window_symbols"] else "❌ Missing")
-    st.write("🪑 Furniture Layout:", "✅ Present" if st.session_state.checklist_results["furniture"] else "❌ Missing")
-    st.write("📝 Annotations:", "✅ Present" if st.session_state.checklist_results["annotations"] else "❌ Missing") 
+    if uploaded_file is not None:
+        if st.button("Analyze Floor Plan"):
+            with st.spinner("Analyzing document..."):
+                # Convert images to base64
+                image_messages = []
+                for i, image in enumerate(images):
+                    # Convert PIL image to bytes
+                    img_byte_arr = io.BytesIO()
+                    image.save(img_byte_arr, format='PNG')
+                    img_byte_arr = img_byte_arr.getvalue()
+                    
+                    # Encode as base64
+                    img_base64 = base64.b64encode(img_byte_arr).decode('utf-8')
+                    
+                    image_messages.append({
+                        "type": "input_image",
+                        "image": img_base64
+                    })
+                
+                # Prepare the message content
+                message_content = [
+                    {
+                        "type": "input_text",
+                        "text": "Analyze this floor plan and check for the following elements: scale bar, compass/north reference, room dimensions, title block, legend, room labels, door swings, window symbols, furniture layout, and annotations."
+                    }
+                ]
+                message_content.extend(image_messages)
+                
+                completion = client.responses.parse(
+                    model=openai_model,
+                    input=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "input_text",
+                                    "text": "Analyze this floor plan and check for the following elements: scale bar, compass/north reference, room dimensions, title block, legend, room labels, door swings, window symbols, furniture layout, and annotations."
+                                },
+                                {
+                                    "type": "input_image",
+                                    "image_url": f"data:image/jpeg;base64,{image_messages[0]['image']}"
+                                }
+                            ]
+                        }
+                    ],
+                    text_format=DiagramExtraction
+                )
+
+                # Extract the parsed response
+                output_text = completion.output[0].content[0].text
+                parsed_data = json.loads(output_text)
+                
+                # Store the results in session state
+                st.session_state.checklist_results = parsed_data
+                st.session_state.analysis_complete = True
+        
+        # Only show checklist if analysis is complete
+        if st.session_state.get('analysis_complete', False):
+            st.write("### Required Elements")
+            st.write("Scale Bar:", "✅ Present" if st.session_state.checklist_results["scale_bar"] else "❌ Missing")
+            st.write("Compass/North Reference:", "✅ Present" if st.session_state.checklist_results["compass"] else "❌ Missing")
+            st.write("Room Dimensions:", "✅ Present" if st.session_state.checklist_results["dimensions"] else "❌ Missing")
+            st.write("Title Block:", "✅ Present" if st.session_state.checklist_results["title_block"] else "❌ Missing")
+            
+            st.write("### Additional Elements")
+            st.write("📋 Legend:", "✅ Present" if st.session_state.checklist_results["legend"] else "❌ Missing")
+            st.write("🏠 Room Labels:", "✅ Present" if st.session_state.checklist_results["room_labels"] else "❌ Missing")
+            st.write("🚪 Door Swings:", "✅ Present" if st.session_state.checklist_results["door_swings"] else "❌ Missing")
+            st.write("🪟 Window Symbols:", "✅ Present" if st.session_state.checklist_results["window_symbols"] else "❌ Missing")
+            st.write("🪑 Furniture Layout:", "✅ Present" if st.session_state.checklist_results["furniture"] else "❌ Missing")
+            st.write("📝 Annotations:", "✅ Present" if st.session_state.checklist_results["annotations"] else "❌ Missing") 
