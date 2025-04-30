@@ -9,6 +9,7 @@ from PIL import Image
 import io
 import json
 import random
+import pyttsx3
 from models import DiagramExtraction, CHECK_EMOJIS, STATUS_MESSAGES
 
 # Load environment variables
@@ -134,10 +135,21 @@ with col2:
             
             # Show toast with random status message
             if percentage == 100:
-                st.toast(random.choice(STATUS_MESSAGES["passing"]), icon="🕵️‍♂️")
+                message = random.choice(STATUS_MESSAGES["passing"])
+                st.toast(message, icon="🕵️‍♂️")
                 st.balloons()
             else:
-                st.toast(random.choice(STATUS_MESSAGES["failing"]), icon="🕵️‍♂️")
+                message = random.choice(STATUS_MESSAGES["failing"])
+                st.toast(message, icon="🕵️‍♂️")
+            
+            # Initialize text-to-speech engine
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 150)  # Speed of speech
+
+            # Read out the message
+            engine.say(message[:-1])
+            engine.runAndWait()
+            del(engine)
             
             # Display overall score with fun feedback
             st.write("### Investigation Results 🎯")
