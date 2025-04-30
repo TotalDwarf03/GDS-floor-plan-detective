@@ -1,10 +1,6 @@
 from pydantic import BaseModel, Field
 import json
 
-# Load checklist configuration
-with open('checklist_config.json', 'r') as f:
-    checklist_config = json.load(f)
-
 # Define emojis for each check
 CHECK_EMOJIS = {
     "scale_bar": "📏",
@@ -17,6 +13,34 @@ CHECK_EMOJIS = {
     "window_symbols": "🪟",
     "furniture": "🪑",
     "annotations": "📝"
+}
+
+# Random status messages for toasts
+STATUS_MESSAGES = {
+    "passing": [
+        "🔍 Case closed! This floor plan is perfect!",
+        "🕵️‍♂️ Elementary, my dear Watson! All elements present!",
+        "🔎 Investigation complete - this floor plan is spotless!",
+        "📋 All evidence accounted for - perfect floor plan!",
+        "🔦 Nothing to see here, everything's in order!",
+        "📝 Case file complete - all requirements met!",
+        "🔍 Mystery solved - this floor plan is flawless!",
+        "🕵️‍♂️ The evidence is clear - perfect execution!",
+        "🔎 All clues point to a perfect floor plan!",
+        "📋 Case closed with flying colors!"
+    ],
+    "failing": [
+        "🔍 Missing evidence detected!",
+        "🕵️‍♂️ Elementary, my dear Watson - some elements are missing!",
+        "🔎 Investigation reveals missing pieces!",
+        "📋 Case file incomplete - more details needed!",
+        "🔦 Found some gaps in the evidence!",
+        "📝 Need more clues to solve this case!",
+        "🔍 Mystery remains - some elements are missing!",
+        "🕵️‍♂️ The evidence suggests more work needed!",
+        "🔎 Some clues are still missing!",
+        "📋 Case remains open - more details required!"
+    ]
 }
 
 class DiagramExtraction(BaseModel):

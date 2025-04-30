@@ -8,7 +8,8 @@ import base64
 from PIL import Image
 import io
 import json
-from models import DiagramExtraction, checklist_config, CHECK_EMOJIS
+import random
+from models import DiagramExtraction, CHECK_EMOJIS, STATUS_MESSAGES
 
 # Load environment variables
 load_dotenv()
@@ -59,17 +60,17 @@ with col1:
             os.unlink(tmp_file_path)
 
 with col2:
-    st.header("Floor Plan Checklist")
+    st.header("Floor Plan Detective 🕵️‍♂️")
     
-    # Initialize checklist results in session state if not exists
+    # Initialize floor plan results in session state if not exists
     if 'checklist_results' not in st.session_state:
         st.session_state.checklist_results = {
-            key: False for key in checklist_config["floorplan_checks"].keys()
+            key: False for key in CHECK_EMOJIS.keys()
         }
     
     if uploaded_file is not None:
-        if st.button("Analyze Floor Plan"):
-            with st.spinner("Analyzing document..."):
+        if st.button("Investigate Floor Plan 🔍"):
+            with st.spinner("Investigation in progress..."):
                 # Convert images to base64
                 image_messages = []
                 for i, image in enumerate(images):
@@ -91,7 +92,7 @@ with col2:
                     {
                         "type": "input_text",
                         "text": "Analyze this floor plan and check for the following elements: " + 
-                               ", ".join([item["description"] for item in checklist_config["floorplan_checks"].values()])
+                               ", ".join([key.replace('_', ' ').title() for key in CHECK_EMOJIS.keys()])
                     }
                 ]
                 message_content.extend(image_messages)
@@ -105,7 +106,7 @@ with col2:
                                 {
                                     "type": "input_text",
                                     "text": "Analyze this floor plan and check for the following elements: " + 
-                                           ", ".join([item["description"] for item in checklist_config["floorplan_checks"].values()])
+                                           ", ".join([key.replace('_', ' ').title() for key in CHECK_EMOJIS.keys()])
                                 },
                                 {
                                     "type": "input_image",
@@ -124,47 +125,50 @@ with col2:
                 # Store the results in session state
                 st.session_state.checklist_results = parsed_data
                 st.session_state.analysis_complete = True
-        
-        # Only show checklist if analysis is complete
+        # Only show results if analysis is complete
         if st.session_state.get('analysis_complete', False):
             # Calculate overall score
             total_checks = len(st.session_state.checklist_results)
             passed_checks = sum(1 for value in st.session_state.checklist_results.values() if value)
             percentage = (passed_checks / total_checks) * 100
             
-            # Display overall score
-            st.write("### Overall Score")
-            st.write(f"Passed: {passed_checks}/{total_checks} checks")
+            # Show toast with random status message
+            if percentage == 100:
+                st.toast(random.choice(STATUS_MESSAGES["passing"]), icon="🎉")
+            else:
+                st.toast(random.choice(STATUS_MESSAGES["failing"]), icon="⚠️")
+            
+            # Display overall score with fun feedback
+            st.write("### Investigation Results 🎯")
+            st.write(f"Found: {passed_checks}/{total_checks} elements")
             
             if percentage == 100:
-                st.write(f"Percentage: {percentage:.0f}% ✅")
+                st.write(f"Score: {percentage:.0f}% ✅")
             else:
-                st.write(f"Percentage: <span style='color:red'>{percentage:.0f}% ❌</span>", unsafe_allow_html=True)
+                st.write(f"Score: <span style='color:red'>{percentage:.0f}% ❌</span>", unsafe_allow_html=True)
                 st.error("⚠️ The floor plan should be rejected due to missing required elements.")
             
-            # Display checklist items
-            st.write("### Floor Plan Requirements")
+            # Display investigation findings
+            st.write("### Investigation Findings 🔎")
             
             # Get failed and passed checks
-            failed_checks = {k: v for k, v in checklist_config["floorplan_checks"].items() 
+            failed_checks = {k: v for k, v in CHECK_EMOJIS.items() 
                            if not st.session_state.checklist_results[k]}
-            passed_checks = {k: v for k, v in checklist_config["floorplan_checks"].items() 
+            passed_checks = {k: v for k, v in CHECK_EMOJIS.items() 
                            if st.session_state.checklist_results[k]}
             
-            # Display failed checks first
+            # Display missing elements first
             if failed_checks:
-                st.write("#### Missing Requirements")
-                for key, config in failed_checks.items():
-                    emoji = CHECK_EMOJIS.get(key, "")
-                    st.write(f"{emoji} {config['name']}:", 
+                st.write("#### Missing Elements 🚫")
+                for key, emoji in failed_checks.items():
+                    st.write(f"{emoji} {key.replace('_', ' ').title()}:", 
                             "<span style='color:red'><b>❌ Missing</b></span>", 
                             unsafe_allow_html=True)
             
-            # Display passed checks
+            # Display found elements
             if passed_checks:
-                st.write("#### Present Requirements")
-                for key, config in passed_checks.items():
-                    emoji = CHECK_EMOJIS.get(key, "")
-                    st.write(f"{emoji} {config['name']}:", 
+                st.write("#### Found Elements ✅")
+                for key, emoji in passed_checks.items():
+                    st.write(f"{emoji} {key.replace('_', ' ').title()}:", 
                             "✅ Present", 
                             unsafe_allow_html=True) 
