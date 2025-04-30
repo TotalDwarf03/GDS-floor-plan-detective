@@ -1,0 +1,54 @@
+{
+    "floorplan_checks": {
+        "scale_bar": {
+            "name": "Scale Bar",
+            "description": "Does the image have a scale bar?",
+            "emoji": "📏"
+        },
+        "compass": {
+            "name": "Compass/North Reference",
+            "description": "Does the image have a compass/north reference?",
+            "emoji": "🧭"
+        },
+        "dimensions": {
+            "name": "Room Dimensions",
+            "description": "Are room dimensions clearly labeled?",
+            "emoji": "📐"
+        },
+        "title_block": {
+            "name": "Title Block",
+            "description": "Is there a title block with project information?",
+            "emoji": "📋"
+        },
+        "legend": {
+            "name": "Legend",
+            "description": "Is there a legend explaining symbols?",
+            "emoji": "📋"
+        },
+        "room_labels": {
+            "name": "Room Labels",
+            "description": "Are all rooms clearly labeled?",
+            "emoji": "🏠"
+        },
+        "door_swings": {
+            "name": "Door Swings",
+            "description": "Are door swings indicated?",
+            "emoji": "🚪"
+        },
+        "window_symbols": {
+            "name": "Window Symbols",
+            "description": "Are windows clearly marked?",
+            "emoji": "🪟"
+        },
+        "furniture": {
+            "name": "Furniture Layout",
+            "description": "Is furniture layout shown?",
+            "emoji": "🪑"
+        },
+        "annotations": {
+            "name": "Annotations",
+            "description": "Are there any important annotations?",
+            "emoji": "��"
+        }
+    }
+} 

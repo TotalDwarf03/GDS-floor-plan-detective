@@ -13,6 +13,23 @@ import json
 # Load environment variables
 load_dotenv()
 
+# Load checklist configuration
+with open('checklist_config.json', 'r') as f:
+    checklist_config = json.load(f)
+
+# Create Pydantic model dynamically from checklist config
+class DiagramExtraction(BaseModel):
+    scale_bar: bool = Field(description=checklist_config["floorplan_checks"]["scale_bar"]["description"])
+    compass: bool = Field(description=checklist_config["floorplan_checks"]["compass"]["description"])
+    dimensions: bool = Field(description=checklist_config["floorplan_checks"]["dimensions"]["description"])
+    title_block: bool = Field(description=checklist_config["floorplan_checks"]["title_block"]["description"])
+    legend: bool = Field(description=checklist_config["floorplan_checks"]["legend"]["description"])
+    room_labels: bool = Field(description=checklist_config["floorplan_checks"]["room_labels"]["description"])
+    door_swings: bool = Field(description=checklist_config["floorplan_checks"]["door_swings"]["description"])
+    window_symbols: bool = Field(description=checklist_config["floorplan_checks"]["window_symbols"]["description"])
+    furniture: bool = Field(description=checklist_config["floorplan_checks"]["furniture"]["description"])
+    annotations: bool = Field(description=checklist_config["floorplan_checks"]["annotations"]["description"])
+
 # Configure Azure OpenAI
 openai_model = os.environ.get("AZURE_OPENAI_MODEL", "gpt-4.1-mini")
 api_version = os.environ.get("OPENAI_API_VERSION", "2024-12-01-preview")
@@ -25,18 +42,6 @@ client = AzureOpenAI(
     api_version=api_version,
     azure_endpoint=azure_endpoint
 )
-
-class DiagramExtraction(BaseModel):
-    scale_bar: bool = Field(description="Does the image have a scale bar?")
-    compass: bool = Field(description="Does the image have a compass/north reference?")
-    dimensions: bool = Field(description="Are room dimensions clearly labeled?")
-    title_block: bool = Field(description="Is there a title block with project information?")
-    legend: bool = Field(description="Is there a legend explaining symbols?")
-    room_labels: bool = Field(description="Are all rooms clearly labeled?")
-    door_swings: bool = Field(description="Are door swings indicated?")
-    window_symbols: bool = Field(description="Are windows clearly marked?")
-    furniture: bool = Field(description="Is furniture layout shown?")
-    annotations: bool = Field(description="Are there any important annotations?")
 
 st.set_page_config(page_title="Planning Application Floor Plan Analysis", layout="wide")
 
@@ -76,16 +81,7 @@ with col2:
     # Initialize checklist results in session state if not exists
     if 'checklist_results' not in st.session_state:
         st.session_state.checklist_results = {
-            "scale_bar": False,
-            "compass": False,
-            "dimensions": False,
-            "title_block": False,
-            "legend": False,
-            "room_labels": False,
-            "door_swings": False,
-            "window_symbols": False,
-            "furniture": False,
-            "annotations": False
+            key: False for key in checklist_config["floorplan_checks"].keys()
         }
     
     if uploaded_file is not None:
@@ -111,7 +107,8 @@ with col2:
                 message_content = [
                     {
                         "type": "input_text",
-                        "text": "Analyze this floor plan and check for the following elements: scale bar, compass/north reference, room dimensions, title block, legend, room labels, door swings, window symbols, furniture layout, and annotations."
+                        "text": "Analyze this floor plan and check for the following elements: " + 
+                               ", ".join([item["description"] for item in checklist_config["floorplan_checks"].values()])
                     }
                 ]
                 message_content.extend(image_messages)
@@ -124,7 +121,8 @@ with col2:
                             "content": [
                                 {
                                     "type": "input_text",
-                                    "text": "Analyze this floor plan and check for the following elements: scale bar, compass/north reference, room dimensions, title block, legend, room labels, door swings, window symbols, furniture layout, and annotations."
+                                    "text": "Analyze this floor plan and check for the following elements: " + 
+                                           ", ".join([item["description"] for item in checklist_config["floorplan_checks"].values()])
                                 },
                                 {
                                     "type": "input_image",
@@ -146,16 +144,42 @@ with col2:
         
         # Only show checklist if analysis is complete
         if st.session_state.get('analysis_complete', False):
-            st.write("### Required Elements")
-            st.write("Scale Bar:", "✅ Present" if st.session_state.checklist_results["scale_bar"] else "❌ Missing")
-            st.write("Compass/North Reference:", "✅ Present" if st.session_state.checklist_results["compass"] else "❌ Missing")
-            st.write("Room Dimensions:", "✅ Present" if st.session_state.checklist_results["dimensions"] else "❌ Missing")
-            st.write("Title Block:", "✅ Present" if st.session_state.checklist_results["title_block"] else "❌ Missing")
+            # Calculate overall score
+            total_checks = len(st.session_state.checklist_results)
+            passed_checks = sum(1 for value in st.session_state.checklist_results.values() if value)
+            percentage = (passed_checks / total_checks) * 100
             
-            st.write("### Additional Elements")
-            st.write("📋 Legend:", "✅ Present" if st.session_state.checklist_results["legend"] else "❌ Missing")
-            st.write("🏠 Room Labels:", "✅ Present" if st.session_state.checklist_results["room_labels"] else "❌ Missing")
-            st.write("🚪 Door Swings:", "✅ Present" if st.session_state.checklist_results["door_swings"] else "❌ Missing")
-            st.write("🪟 Window Symbols:", "✅ Present" if st.session_state.checklist_results["window_symbols"] else "❌ Missing")
-            st.write("🪑 Furniture Layout:", "✅ Present" if st.session_state.checklist_results["furniture"] else "❌ Missing")
-            st.write("📝 Annotations:", "✅ Present" if st.session_state.checklist_results["annotations"] else "❌ Missing") 
+            # Display overall score
+            st.write("### Overall Score")
+            st.write(f"Passed: {passed_checks}/{total_checks} checks")
+            
+            if percentage == 100:
+                st.write(f"Percentage: {percentage:.0f}% ✅")
+            else:
+                st.write(f"Percentage: <span style='color:red'>{percentage:.0f}% ❌</span>", unsafe_allow_html=True)
+                st.error("⚠️ The floor plan should be rejected due to missing required elements.")
+            
+            # Display checklist items
+            st.write("### Floor Plan Requirements")
+            
+            # Get failed and passed checks
+            failed_checks = {k: v for k, v in checklist_config["floorplan_checks"].items() 
+                           if not st.session_state.checklist_results[k]}
+            passed_checks = {k: v for k, v in checklist_config["floorplan_checks"].items() 
+                           if st.session_state.checklist_results[k]}
+            
+            # Display failed checks first
+            if failed_checks:
+                st.write("#### Missing Requirements")
+                for key, config in failed_checks.items():
+                    st.write(f"{config['emoji']} {config['name']}:", 
+                            "<span style='color:red'><b>❌ Missing</b></span>", 
+                            unsafe_allow_html=True)
+            
+            # Display passed checks
+            if passed_checks:
+                st.write("#### Present Requirements")
+                for key, config in passed_checks.items():
+                    st.write(f"{config['emoji']} {config['name']}:", 
+                            "✅ Present", 
+                            unsafe_allow_html=True) 
