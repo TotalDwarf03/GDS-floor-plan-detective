@@ -7,28 +7,11 @@ from openai import AzureOpenAI
 import base64
 from PIL import Image
 import io
-from pydantic import BaseModel, Field
 import json
+from models import DiagramExtraction, checklist_config, CHECK_EMOJIS
 
 # Load environment variables
 load_dotenv()
-
-# Load checklist configuration
-with open('checklist_config.json', 'r') as f:
-    checklist_config = json.load(f)
-
-# Create Pydantic model dynamically from checklist config
-class DiagramExtraction(BaseModel):
-    scale_bar: bool = Field(description=checklist_config["floorplan_checks"]["scale_bar"]["description"])
-    compass: bool = Field(description=checklist_config["floorplan_checks"]["compass"]["description"])
-    dimensions: bool = Field(description=checklist_config["floorplan_checks"]["dimensions"]["description"])
-    title_block: bool = Field(description=checklist_config["floorplan_checks"]["title_block"]["description"])
-    legend: bool = Field(description=checklist_config["floorplan_checks"]["legend"]["description"])
-    room_labels: bool = Field(description=checklist_config["floorplan_checks"]["room_labels"]["description"])
-    door_swings: bool = Field(description=checklist_config["floorplan_checks"]["door_swings"]["description"])
-    window_symbols: bool = Field(description=checklist_config["floorplan_checks"]["window_symbols"]["description"])
-    furniture: bool = Field(description=checklist_config["floorplan_checks"]["furniture"]["description"])
-    annotations: bool = Field(description=checklist_config["floorplan_checks"]["annotations"]["description"])
 
 # Configure Azure OpenAI
 openai_model = os.environ.get("AZURE_OPENAI_MODEL", "gpt-4.1-mini")
@@ -172,7 +155,8 @@ with col2:
             if failed_checks:
                 st.write("#### Missing Requirements")
                 for key, config in failed_checks.items():
-                    st.write(f"{config['emoji']} {config['name']}:", 
+                    emoji = CHECK_EMOJIS.get(key, "")
+                    st.write(f"{emoji} {config['name']}:", 
                             "<span style='color:red'><b>❌ Missing</b></span>", 
                             unsafe_allow_html=True)
             
@@ -180,6 +164,7 @@ with col2:
             if passed_checks:
                 st.write("#### Present Requirements")
                 for key, config in passed_checks.items():
-                    st.write(f"{config['emoji']} {config['name']}:", 
+                    emoji = CHECK_EMOJIS.get(key, "")
+                    st.write(f"{emoji} {config['name']}:", 
                             "✅ Present", 
                             unsafe_allow_html=True) 
