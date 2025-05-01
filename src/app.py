@@ -97,7 +97,8 @@ with col2:
                                 {
                                     "type": "input_text",
                                     "text": "Analyze this floor plan and check for the following elements: " + 
-                                           ", ".join([key.replace('_', ' ').title() for key in CHECK_EMOJIS.keys()])
+                                           ", ".join([key.replace('_', ' ').title() for key in CHECK_EMOJIS.keys()]) +
+                                           " If any elements are missing, and they're a string, say 'Missing from the diagram.'."
                                 },
                                 {
                                     "type": "input_image",
@@ -114,7 +115,7 @@ with col2:
                 parsed_data = json.loads(output_text)
                 
                 # Store the results in session state
-                st.session_state.checklist_results = parsed_data
+                st.session_state.checklist_results = parsed_data['checklist']
                 st.session_state.analysis_complete = True
         # Only show results if analysis is complete
         if st.session_state.get('analysis_complete', False):
@@ -140,6 +141,17 @@ with col2:
             engine.say(message[:-2])
             engine.runAndWait()
             del(engine)
+
+            # Plan Summary
+            st.write("### Plan Summary 📝")
+            
+            # Display plan details
+            st.write(f"**Date of Drawing:** {parsed_data['date_of_drawing']}")
+            st.write(f"**Client:** {parsed_data['client']}")
+            st.write(f"**Address:** {parsed_data['address']}")
+            st.write(f"**Drawing Creator:** {parsed_data['drawing_creator']}")
+            st.write(f"**Plan Type:** {parsed_data['plan_type']}")
+            st.write(f"**Scale:** {parsed_data['scale']}")
             
             # Display overall score with fun feedback
             st.write("### Investigation Results 🎯")

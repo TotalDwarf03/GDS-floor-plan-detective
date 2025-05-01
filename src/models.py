@@ -9,11 +9,20 @@ CHECK_EMOJIS = {
     "room_labels": "🏠",
 }
 
-class DiagramExtraction(BaseModel):
+class Checklist(BaseModel):
     scale_bar: bool = Field(description="Does the image have a scale bar?")
     compass: bool = Field(description="Does the image have a compass/north reference?")
     room_labels: bool = Field(description="Are all rooms clearly labeled?")
     address: bool = Field(description="Is the address clearly labeled?")
+
+class DiagramExtraction(BaseModel):
+    checklist: Checklist = Field(description="Checklist of required elements in the diagram")
+    plan_type: str = Field(description="Is the plan an existing plan, proposed plan or both?")
+    scale: str = Field(description="What is the scale of the plan?")
+    date_of_drawing: str = Field(description="When was the drawing created?")
+    address: str = Field(description="What is the address of the property?")
+    client: str = Field(description="Who is the client for this drawing?")
+    drawing_creator: str = Field(description="Who created the drawing?")
 
 
 # TODO: Support for non yes no stuff
