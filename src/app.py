@@ -28,9 +28,9 @@ client = AzureOpenAI(
     azure_endpoint=azure_endpoint
 )
 
-st.set_page_config(page_title="Planning Application Floor Plan Analysis", layout="wide")
+st.set_page_config(page_title="Planlyse - Floor Plans", layout="wide")
 
-st.title("Planning Application Floor Plan Analysis")
+st.title("Planlyse - Floor Plans")
 
 # Create two columns
 col1, col2 = st.columns([2, 1])
