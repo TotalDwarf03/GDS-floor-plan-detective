@@ -1,10 +1,10 @@
-# Floor Plan Detective 🕵️‍♂️
+# Planalyse - Floor Plan Detective 🕵️‍♂️
 
 A Streamlit application that analyzes floor plans in PDF format to check for required elements, providing a fun and engaging detective-themed interface.
 
 ## Contents
 
-- [Floor Plan Detective 🕵️‍♂️](#floor-plan-detective-️️)
+- [Planalyse - Floor Plan Detective 🕵️‍♂️](#planalyse---floor-plan-detective-️️)
   - [Contents](#contents)
   - [Disclaimer](#disclaimer)
   - [Features](#features)
@@ -19,9 +19,40 @@ A Streamlit application that analyzes floor plans in PDF format to check for req
 
 This project was created during the GDS Hackathon in Leeds (We hacked planning). It contains a majority of AI generated code, and is not intended to be used as a production application. The tool was developed between the 30th of April and the 1st of May 2025.
 
+We were assigned as Team 12 and had the following problem statement:
+
+---
+
+*PROBLEM STATEMENT B:*
+
+Enhancing automation and efficiency within planning processes
+
+The planning system is hindered by manual, time-consuming processes.
+Planning officers can find it difficult to assess applications quickly – especially
+complex applications. They need to understand the planning history of each site,
+how similar cases have been handled, relevant case law and which statutory bodies
+need to be consulted. They then need to provide an officer report and decision letter
+based on an assessment.
+
+Planning services tend to spend more resources on householder applications than
+they can recover in fees. These common application types need to be assessed
+quickly, efficiently and consistently against local policy and can vary depending on
+the planning status of their neighbourhood (e.g. conservation area).
+There is an opportunity for automation and AI augmentation to streamline planning
+application reviews, document processing, and predictive maintenance.
+
+Enhancing automation and efficiency in planning processes is vital to reduce
+bottlenecks, improve decision-making accuracy, and free up planning officers to
+focus on more strategic tasks. This will lead to faster development approvals and
+better resource management.
+
+---
+
 The scope of the project was to create a tool to show how AI could be used to help replace some of the manual, time-consuming tasks that are part of the planning process. This would help councils to process planning applications more quickly and efficiently, freeing up resources to focus on more complex cases.
 
 This tool focuses on validating design diagrams, submitted with applications for householder planning permission. Currently, there are no tools in place that verify diagrams, so this is a step towards automating this process.
+
+We achieved 3rd place in the hackathon out of 15 different teams.
 
 ## Features
 
