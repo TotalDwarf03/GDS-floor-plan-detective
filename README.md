@@ -2,6 +2,19 @@
 
 A Streamlit application that analyzes floor plans in PDF format to check for required elements, providing a fun and engaging detective-themed interface.
 
+## Contents
+
+- [Floor Plan Detective 🕵️‍♂️](#floor-plan-detective-️️)
+  - [Contents](#contents)
+  - [Disclaimer](#disclaimer)
+  - [Features](#features)
+  - [Video Demo](#video-demo)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [License](#license)
+
+
 ## Disclaimer
 
 This project was created during the GDS Hackathon in Leeds (We hacked planning). It contains a majority of AI generated code, and is not intended to be used as a production application. The tool was developed between the 30th of April and the 1st of May 2025.
@@ -18,6 +31,12 @@ This tool focuses on validating design diagrams, submitted with applications for
 - Text-to-speech notifications
 - Visual feedback with emojis and balloons
 - Real-time analysis results
+
+## Video Demo
+
+A demonstration of the tool can be found within the repository: [video_demo.mov](./demo/video_demo.mov)
+
+![Floor Plan Detective Demo](./demo/readme_demo.gif)
 
 ## Requirements
 
