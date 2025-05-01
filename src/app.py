@@ -28,9 +28,9 @@ client = AzureOpenAI(
     azure_endpoint=azure_endpoint
 )
 
-st.set_page_config(page_title="Planlyse - Floor Plans", layout="wide")
+st.set_page_config(page_title="Planalyse - Floor Plans", layout="wide")
 
-st.title("Planlyse - Floor Plans")
+st.title("Planalyse - Floor Plans")
 
 # Create two columns
 col1, col2 = st.columns([2, 1])
@@ -87,16 +87,6 @@ with col2:
                         "type": "input_image",
                         "image": img_base64
                     })
-                
-                # Prepare the message content
-                message_content = [
-                    {
-                        "type": "input_text",
-                        "text": "Analyze this floor plan and check for the following elements: " + 
-                               ", ".join([key.replace('_', ' ').title() for key in CHECK_EMOJIS.keys()])
-                    }
-                ]
-                message_content.extend(image_messages)
                 
                 completion = client.responses.parse(
                     model=openai_model,
