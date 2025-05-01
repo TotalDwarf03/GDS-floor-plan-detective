@@ -36,7 +36,7 @@ This tool focuses on validating design diagrams, submitted with applications for
 
 A demonstration of the tool can be found within the repository: [video_demo.mov](./demo/video_demo.mov)
 
-![Floor Plan Detective Demo](./demo/readme_demo.gif)
+![Floor Plan Detective Demo](https://github.com/TotalDwarf03/GDS-floor-plan-detective/blob/main/demo/video_demo.mov)
 
 ## Requirements
 
