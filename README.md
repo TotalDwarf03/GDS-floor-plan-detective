@@ -24,24 +24,29 @@ This tool focuses on validating design diagrams, submitted with applications for
 - Python 3.8+
 - Streamlit
 - Azure OpenAI API access
-- Additional dependencies listed in `requirements.txt`
+- Poetry Package Manager
 
 ## Installation
 
 1. Clone the repository
 
-2. Create a virtual environment and activate it:
+2. Change into the root of the repository:
+```bash
+cd gds-leeds-hack-25
+```
+
+3. Create a virtual environment and activate it:
 ```bash
 python -m venv venv
 source venv/bin/activate
 ```
 
-3. Install dependencies:
+4. Install dependencies:
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
-1. Create a `.env` file with your Azure OpenAI credentials:
+5. Create a `.env` file with your Azure OpenAI credentials:
 ```
 AZURE_OPENAI_ENDPOINT=your_endpoint
 AZURE_OPENAI_KEY=your_key
@@ -53,10 +58,10 @@ OPENAI_API_VERSION=2025-03-01-preview
 
 1. Start the Streamlit app:
 ```bash
-streamlit run app.py
+streamlit run src/app.py
 ```
 
-2. Upload a PDF containing floor plans
+2. Upload a PDF containing floor plans (Examples are available in [`example_floorplans/`](./example_floorplans/))
 3. Click "Investigate Floor Plan" to start the analysis
 4. View the results and feedback
 

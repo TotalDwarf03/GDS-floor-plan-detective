@@ -147,7 +147,7 @@ with col2:
             engine.setProperty('rate', 150)  # Speed of speech
 
             # Read out the message
-            engine.say(message[:-1])
+            engine.say(message[:-2])
             engine.runAndWait()
             del(engine)
             
